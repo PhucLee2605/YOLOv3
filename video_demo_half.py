@@ -106,8 +106,6 @@ if __name__ == '__main__':
     if CUDA:
         model.cuda().half()
 
-    # model(get_test_input(inp_dim, CUDA), CUDA)
-
     model.eval()
 
     videofile = args.video
@@ -122,7 +120,6 @@ if __name__ == '__main__':
 
         ret, frame = cap.read()
         if ret:
-
             img, orig_im, dim = prep_image(img=frame,
                                            inp_dim=inp_dim,
                                            resize_pad=True)
@@ -141,8 +138,7 @@ if __name__ == '__main__':
 
             if type(output) == int:
                 frames += 1
-                print("FPS of the video is {:5.2f}".format(
-                    frames / (time.time() - start)))
+                print("FPS of the video is {:5.2f}".format(frames / (time.time() - start)))
                 cv2.imshow("frame", orig_im)
                 key = cv2.waitKey(1)
                 if key & 0xFF == ord('q'):
@@ -152,18 +148,18 @@ if __name__ == '__main__':
             im_dim = im_dim.repeat(output.size(0), 1)
             scaling_factor = torch.min(inp_dim/im_dim, 1)[0].view(-1, 1)
 
-            output[:, [1, 3]] -= (inp_dim - scaling_factor *
-                                  im_dim[:, 0].view(-1, 1))/2
-            output[:, [2, 4]] -= (inp_dim - scaling_factor *
-                                  im_dim[:, 1].view(-1, 1))/2
+            output[:, [1, 3]] -= (inp_dim - scaling_factor * im_dim[:, 0].view(-1, 1))/2
+            output[:, [2, 4]] -= (inp_dim - scaling_factor * im_dim[:, 1].view(-1, 1))/2
 
             output[:, 1:5] /= scaling_factor
 
             for i in range(output.shape[0]):
-                output[i, [1, 3]] = torch.clamp(
-                    output[i, [1, 3]], 0.0, im_dim[i, 0])
-                output[i, [2, 4]] = torch.clamp(
-                    output[i, [2, 4]], 0.0, im_dim[i, 1])
+                output[i, [1, 3]] = torch.clamp(output[i, [1, 3]],
+                                                0.0,
+                                                im_dim[i, 0])
+                output[i, [2, 4]] = torch.clamp(output[i, [2, 4]],
+                                                0.0,
+                                                im_dim[i, 1])
 
             classes = load_classes('data/coco.names')
             colors = pkl.load(open("pallete", "rb"))
@@ -175,8 +171,7 @@ if __name__ == '__main__':
             if key & 0xFF == ord('q'):
                 break
             frames += 1
-            print("FPS of the video is {:5.2f}".format(
-                frames / (time.time() - start)))
+            print("FPS of the video is {:5.2f}".format(frames / (time.time() - start)))
 
         else:
             break

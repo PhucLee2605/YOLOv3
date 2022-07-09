@@ -15,7 +15,6 @@ from src.bbox import write
 def arg_parse():
     """
     Parse arguements to the detect module
-
     """
 
     parser = argparse.ArgumentParser(description='YOLO v3 Cam Demo')
